@@ -1,4 +1,4 @@
-local Players = game:GetService("Players")
+local Players = game:GetService("Players") -- แก้จาก Local เป็น local และเพิ่ม s
 local TweenService = game:GetService("TweenService")
 local UIS = game:GetService("UserInputService")
 local CoreGui = game:GetService("CoreGui")
@@ -64,43 +64,7 @@ CloseBtn.MouseButton1Click:Connect(function()
     screenGui:Destroy()
 end)
 
--- Draggable
-local dragging, dragStart, startPos
-TitleBar.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1
-    or input.UserInputType == Enum.UserInputType.Touch then
-        dragging = true
-        dragStart = input.Position
-        startPos = Main.Position
-    end
-end)
-UIS.InputChanged:Connect(function(input)
-    if dragging and (
-        input.UserInputType == Enum.UserInputType.MouseMovement
-        or input.UserInputType == Enum.UserInputType.Touch
-    ) then
-        local d = input.Position - dragStart
-        Main.Position = UDim2.new(
-            startPos.X.Scale, startPos.X.Offset + d.X,
-            startPos.Y.Scale, startPos.Y.Offset + d.Y
-        )
-        -- FloatBtn ตามหน้าต่างหลัก
-        FloatBtn.Position = UDim2.new(
-            Main.Position.X.Scale,
-            Main.Position.X.Offset - 54,
-            Main.Position.Y.Scale,
-            Main.Position.Y.Offset - 22
-        )
-    end
-end)
-UIS.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1
-    or input.UserInputType == Enum.UserInputType.Touch then
-        dragging = false
-    end
-end)
-
--- ปุ่ม W ลอย (ซ้ายของ Main)
+-- ปุ่ม W ลอย (ย้ายขึ้นมาสร้างก่อน เพื่อให้ระบบดักจับการลากรู้จักตัวแปรนี้)
 local FloatBtn = Instance.new("TextButton", screenGui)
 FloatBtn.Size = UDim2.fromOffset(44, 44)
 FloatBtn.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -122,6 +86,44 @@ local mainVisible = true
 FloatBtn.MouseButton1Click:Connect(function()
     mainVisible = not mainVisible
     Main.Visible = mainVisible
+end)
+
+-- Draggable (ระบบลาก)
+local dragging, dragStart, startPos
+TitleBar.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1
+    or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = Main.Position
+    end
+end)
+
+UIS.InputChanged:Connect(function(input)
+    if dragging and (
+        input.UserInputType == Enum.UserInputType.MouseMovement
+        or input.UserInputType == Enum.UserInputType.Touch
+    ) then
+        local d = input.Position - dragStart
+        Main.Position = UDim2.new(
+            startPos.X.Scale, startPos.X.Offset + d.X,
+            startPos.Y.Scale, startPos.Y.Offset + d.Y
+        )
+        -- FloatBtn ขยับตามหน้าต่างหลักอย่างถูกต้อง
+        FloatBtn.Position = UDim2.new(
+            Main.Position.X.Scale,
+            Main.Position.X.Offset - 134, -- ล็อกตำแหน่งให้อยู่เยื้องซ้ายเหมือนตอนเริ่มต้น
+            Main.Position.Y.Scale,
+            Main.Position.Y.Offset
+        )
+    end
+end)
+
+UIS.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1
+    or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = false
+    end
 end)
 
 -- =========================
